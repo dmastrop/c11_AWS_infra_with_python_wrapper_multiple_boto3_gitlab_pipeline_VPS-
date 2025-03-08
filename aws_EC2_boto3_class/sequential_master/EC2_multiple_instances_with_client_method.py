@@ -1,4 +1,23 @@
 import boto3
+from dotenv import load_dotenv
+import os
+
+# This will load env vars from the .env file
+# They will be available to use in the rest of the code blocks below
+load_dotenv()
+
+
+# Set variables
+# os.getenv will load from the .env. The .env will be created on the fly by the gitlab pipeline script
+aws_access_key = f'{os.getenv("AWS_ACCESS_KEY_ID")}'
+aws_secret_key = f'{os.getenv("AWS_SECRET_ACCESS_KEY")}'
+region_name = f'{os.getenv("region_name")}'
+image_id = f'{os.getenv("image_id")}'
+instance_type = f'{os.getenv("instance_type")}'
+key_name = f'{os.getenv("key_name")}'
+min_count = f'{os.getenv("min_count")}'
+max_count = f'{os.getenv("max_count")}'
+
 
 def start_ec2_instances(aws_access_key, aws_secret_key, region_name, image_id, instance_type, key_name, min_count, max_count):
     # Establish a session with AWS
@@ -16,21 +35,12 @@ def start_ec2_instances(aws_access_key, aws_secret_key, region_name, image_id, i
         ImageId=image_id,
         InstanceType=instance_type,
         KeyName=key_name,
-        MinCount=min_count,
-        MaxCount=max_count
+        MinCount=int(min_count),
+        MaxCount=int(max_count)
     )
     
     return response
 
-# Example usage
-aws_access_key = '***REMOVED***'
-aws_secret_key = '***REMOVED***'
-region_name = 'us-east-1'
-image_id = 'ami-0e1bed4f06a3b463d'  # Replace with your desired AMI ID
-instance_type = 't2.micro'  # Replace with your desired instance type
-key_name = 'course3_kops_from_course8_project14_EC2_key'  # Replace with your key pair name
-min_count = 10  # Minimum number of instances to launch
-max_count = 10  # Maximum number of instances to launch
 
 response = start_ec2_instances(aws_access_key, aws_secret_key, region_name, image_id, instance_type, key_name, min_count, max_count)
 print(response)
