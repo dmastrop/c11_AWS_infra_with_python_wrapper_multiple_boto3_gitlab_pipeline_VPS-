@@ -1,0 +1,43 @@
+stages:
+  - build
+  - push
+  - deploy
+  - cleanup
+
+build:
+  stage: build
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE:$CI_PIPELINE_IID-$CI_COMMIT_SHORT_SHA -t $CI_REGISTRY_IMAGE:latest .
+
+
+push:
+  stage: push
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker push $CI_REGISTRY_IMAGE:$CI_PIPELINE_IID-$CI_COMMIT_SHORT_SHA
+    - docker push $CI_REGISTRY_IMAGE:latest
+
+deploy:
+  stage: deploy
+  before_script:
+    - echo 'AWS_ACCESS_KEY_ID='${AWS_ACCESS_KEY_ID} >> .env
+    - echo 'AWS_SECRET_ACCESS_KEY='${AWS_SECRET_ACCESS_KEY} >> .env
+    - echo 'region_name=us-east-1' >> .env
+    - echo 'image_id=ami-0e1bed4f06a3b463d' >> .env
+    - echo 'instance_type=t2.micro' >> .env
+    - echo 'key_name=course3_kops_from_course8_project14_EC2_key' >> .env
+    - echo 'min_count=10' >> .env
+    - echo 'max_count=10' >> .env
+
+  script:
+    - docker run --rm --env-file .env $CI_REGISTRY_IMAGE:latest
+  allow_failure: true
+  # this will keep the pipeline going to cleanup stage even if the above python script  fails
+  only:
+    - main
+
+cleanup:
+  stage: cleanup
+  script:
+    - docker rmi $CI_REGISTRY_IMAGE:$CI_PIPELINE_IID-$CI_COMMIT_SHORT_SHA $CI_REGISTRY_IMAGE:latest -f
+  when: always
