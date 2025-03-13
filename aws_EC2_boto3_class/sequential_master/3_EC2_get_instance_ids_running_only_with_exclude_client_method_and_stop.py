@@ -1,4 +1,23 @@
 import boto3
+from dotenv import load_dotenv
+import os
+
+# This will load env vars from the .env file
+# They will be available to use in the rest of the code blocks below
+load_dotenv()
+
+
+# Set variables
+# os.getenv will load from the .env. The .env will be created on the fly by the gitlab pipeline script
+aws_access_key = f'{os.getenv("AWS_ACCESS_KEY_ID")}'
+aws_secret_key = f'{os.getenv("AWS_SECRET_ACCESS_KEY")}'
+region_name = f'{os.getenv("region_name")}'
+image_id = f'{os.getenv("image_id")}'
+instance_type = f'{os.getenv("instance_type")}'
+key_name = f'{os.getenv("key_name")}'
+min_count = f'{os.getenv("min_count")}'
+max_count = f'{os.getenv("max_count")}'
+
 
 def get_running_instance_ids(exclude_ids=None):
     if exclude_ids is None:
@@ -44,7 +63,18 @@ def get_running_instance_ids(exclude_ids=None):
 
 def stop_ec2_instances(instance_ids):
     # Create an EC2 client
-    ec2_client = boto3.client('ec2')
+    #ec2_client = boto3.client('ec2')
+
+
+    # Instead of the default boto3.client session use a custom session as the below methods require my login credentials and region
+    session = boto3.Session(
+        aws_access_key_id=aws_access_key,
+        aws_secret_access_key=aws_secret_key,
+        region_name=region_name
+    )
+
+    # Create an EC2 client with custom session above instead of boto3.client default session
+    ec2_client = session.client('ec2')
 
     try:
         # Stop the instances
