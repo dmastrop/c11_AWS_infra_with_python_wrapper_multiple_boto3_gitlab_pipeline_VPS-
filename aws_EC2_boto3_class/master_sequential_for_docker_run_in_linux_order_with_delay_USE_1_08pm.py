@@ -4,7 +4,7 @@ import time
 
 def run_python_scripts_sequentially(directory, delay_seconds=5):
     # List all files in the specified directory in the order of ls -la
-    files = sorted(os.listdir(directory))
+    files = os.listdir(directory)
     
     # Filter out only Python scripts
     python_scripts = [f for f in files if f.endswith('.py')]
@@ -23,5 +23,5 @@ def run_python_scripts_sequentially(directory, delay_seconds=5):
 if __name__ == "__main__":
     # Specify the directory containing the Python scripts
     directory = '/aws_EC2/sequential_master'
-    run_python_scripts_sequentially(directory, delay_seconds=60)
+    run_python_scripts_sequentially(directory, delay_seconds=180)
 
