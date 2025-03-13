@@ -5,7 +5,18 @@ def get_running_instance_ids(exclude_ids=None):
         exclude_ids = []
 
     # Create an EC2 client
-    ec2_client = boto3.client('ec2')
+    #ec2_client = boto3.client('ec2')
+    
+
+    # Instead of the default boto3.client session use a custom session as the below methods require my login credentials and region
+    session = boto3.Session(
+        aws_access_key_id=aws_access_key,
+        aws_secret_access_key=aws_secret_key,
+        region_name=region_name
+    )
+
+    # Create an EC2 client with custom session above instead of boto3.client default session
+    ec2_client = session.client('ec2')
 
     try:
         # Describe instances with filters to get only running instances
