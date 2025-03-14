@@ -50,6 +50,27 @@ def get_stopped_instance_ids(exclude_ids=None):
         print(f"An error occurred: {e}")
         return []
 
+def terminate_ec2_instances(instance_ids):
+    # Create a custom session
+    session = boto3.Session(
+        aws_access_key_id=aws_access_key,
+        aws_secret_access_key=aws_secret_key,
+        region_name=region_name
+    )
+
+    # Create an EC2 client with the custom session
+    ec2_client = session.client('ec2')
+
+    try:
+        # Terminate the instances
+        response = ec2_client.terminate_instances(InstanceIds=instance_ids)
+        print("Terminating instances:", instance_ids)
+        print(response)
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+
+
 
 if __name__ == "__main__":
     # Replace with your instance IDs to exclude
@@ -58,4 +79,10 @@ if __name__ == "__main__":
     # Get stopped instance IDs excluding the specified IDs
     stopped_instance_ids = get_stopped_instance_ids(exclude_ids)
     print("Stopped Instance IDs (excluding specified IDs):", stopped_instance_ids)
+
+    # Terminate the stopped instances that are not in the exclusion list
+    if stopped_instance_ids:
+        terminate_ec2_instances(stopped_instance_ids)
+    else:
+        print("No instances to terminate.")
 
