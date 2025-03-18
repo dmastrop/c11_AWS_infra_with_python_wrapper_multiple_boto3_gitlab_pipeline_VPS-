@@ -19,6 +19,7 @@ def run_python_scripts_sequentially(directory, delays):
         
         # Introduce a delay if it's not the last script
         if i < len(python_scripts) - 1:
+            print(f"Delaying next execution by {delays[i]} seconds...")
             time.sleep(delays[i])
 
 if __name__ == "__main__":
