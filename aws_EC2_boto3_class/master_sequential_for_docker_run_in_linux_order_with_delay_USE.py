@@ -2,7 +2,7 @@ import os
 import subprocess
 import time
 
-def run_python_scripts_sequentially(directory, delay_seconds=5):
+def run_python_scripts_sequentially(directory, delay_seconds):
     # List all files in the specified directory in the order of ls -la
     files = sorted(os.listdir(directory))
     
