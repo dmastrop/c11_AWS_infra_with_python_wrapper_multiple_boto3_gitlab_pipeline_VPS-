@@ -24,4 +24,4 @@ if __name__ == "__main__":
     # Specify the directory containing the Python scripts
     directory = '/aws_EC2/sequential_master'
     run_python_scripts_sequentially(directory, delay_seconds=90)
-# test3
+# test4
