@@ -28,7 +28,7 @@ if __name__ == "__main__":
     directory = '/aws_EC2/sequential_master' # Replace with actual directory path
     
     # Specify the delays between running each script
-    delays = [360, 90, 90]  # Replace with actual delay values
-    
+    delays = [20, 360, 90]  # Replace with actual delay values
+    # the first number in the array is delay before file 2, is the actual delay before file 3 so this is the wait time for file 2, so use 20, 360, 90 for the delay for first, second, and third files.
     run_python_scripts_sequentially(directory, delays)
 
