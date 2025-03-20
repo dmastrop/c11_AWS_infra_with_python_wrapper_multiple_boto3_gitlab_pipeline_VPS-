@@ -59,11 +59,19 @@ username = 'ubuntu'
 key_path = 'EC2_generic_key.pem'
 
 # Commands to install Tomcat server
+#commands = [
+#    'sudo yum update -y',
+#    'sudo yum install -y tomcat',
+#    'sudo systemctl start tomcat',
+#    'sudo systemctl enable tomcat'
+#]
+
+# Commands to install Tomcat server using apt for ubuntu EC2 instances
 commands = [
-    'sudo yum update -y',
-    'sudo yum install -y tomcat',
-    'sudo systemctl start tomcat',
-    'sudo systemctl enable tomcat'
+    'sudo apt update -y',
+    'sudo apt install -y tomcat9',
+    'sudo systemctl start tomcat9',
+    'sudo systemctl enable tomcat9'
 ]
 
 # SSH into each instance and install Tomcat server
