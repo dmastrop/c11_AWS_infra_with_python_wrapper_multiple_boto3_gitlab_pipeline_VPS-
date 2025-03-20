@@ -118,14 +118,23 @@ for ip in public_ips:
         print(f"Failed to connect to {ip} after multiple attempts")
         continue
     
-
+    print(f"Connected to {ip}. Executing commands...")
 
 
     for command in commands:
         stdin, stdout, stderr = ssh.exec_command(command)
+        print(f"Executing command: {command}")
+
+
+
         print(stdout.read().decode())
         print(stderr.read().decode())
    
+
+        print(f"STDOUT: {stdout_output}")
+        print(f"STDERR: {stderr_output}")
+        
+
         # Explicitly close the files and channel(). This is to address an installation issue of tomcat9
         # from stackoverflow:
         # By explicitly closing the `stdin`, `stdout`, and `stderr` files, you can help ensure that resources are properly cleaned up, which should prevent the `NoneType` error from occurring[1](https://stackoverflow.com/questions/37556888/why-does-paramiko-sporadically-raise-an-exception).
