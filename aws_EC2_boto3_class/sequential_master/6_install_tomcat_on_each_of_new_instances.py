@@ -1,5 +1,27 @@
 import boto3
+from dotenv import load_dotenv
+import os
 import paramiko
+
+# This will load env vars from the .env file
+# They will be available to use in the rest of the code blocks below
+load_dotenv()
+
+
+# Set variables
+# os.getenv will load from the .env. The .env will be created on the fly by the gitlab pipeline script
+aws_access_key = f'{os.getenv("AWS_ACCESS_KEY_ID")}'
+aws_secret_key = f'{os.getenv("AWS_SECRET_ACCESS_KEY")}'
+region_name = f'{os.getenv("region_name")}'
+image_id = f'{os.getenv("image_id")}'
+instance_type = f'{os.getenv("instance_type")}'
+key_name = f'{os.getenv("key_name")}'
+min_count = f'{os.getenv("min_count")}'
+max_count = f'{os.getenv("max_count")}'
+aws_pem_key = f'{os.getenv("AWS_PEM_KEY")}'
+# AWS_PEM_KEY is a file in gitlab variables
+
+
 
 # Define the instance ID to exclude (the EC2 controller)
 exclude_instance_id = 'i-0ddbf7fda9773252b'
@@ -34,7 +56,7 @@ for reservation in response['Reservations']:
 # Define SSH details
 port = 22
 username = 'ubuntu'
-key_path = 'EC2_key.pem'
+key_path = 'aws_pem_key'
 
 # Commands to install Tomcat server
 commands = [
