@@ -57,18 +57,42 @@ commands = [
 ]
 
 # Add a security group rule to allow access to port 80
+#for sg_id in set(security_group_ids):
+#    my_ec2.authorize_security_group_ingress(
+#        GroupId=sg_id,
+#        IpPermissions=[
+#            {
+#                'IpProtocol': 'tcp',
+#                'FromPort': 80,
+#                'ToPort': 80,
+#                'IpRanges': [{'CidrIp': '0.0.0.0/0'}]
+#            }
+#        ]
+#    )
+
+
+
+
+# Add a security group rule to allow access to port 80
+# add error code if the rule already exists
 for sg_id in set(security_group_ids):
-    my_ec2.authorize_security_group_ingress(
-        GroupId=sg_id,
-        IpPermissions=[
-            {
-                'IpProtocol': 'tcp',
-                'FromPort': 80,
-                'ToPort': 80,
-                'IpRanges': [{'CidrIp': '0.0.0.0/0'}]
-            }
-        ]
-    )
+    try:
+        my_ec2.authorize_security_group_ingress(
+            GroupId=sg_id,
+            IpPermissions=[
+                {
+                    'IpProtocol': 'tcp',
+                    'FromPort': 80,
+                    'ToPort': 80,
+                    'IpRanges': [{'CidrIp': '0.0.0.0/0'}]
+                }
+            ]
+        )
+    except my_ec2.exceptions.ClientError as e:
+        if 'InvalidPermission.Duplicate' in str(e):
+            print(f"Rule already exists for security group {sg_id}")
+        else:
+            raise
 
 # SSH into each instance and install Tomcat server
 for ip in public_ips:
