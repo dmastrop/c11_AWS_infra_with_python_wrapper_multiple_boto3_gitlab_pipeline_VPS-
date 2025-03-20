@@ -130,8 +130,12 @@ for ip in public_ips:
         # from stackoverflow:
         # By explicitly closing the `stdin`, `stdout`, and `stderr` files, you can help ensure that resources are properly cleaned up, which should prevent the `NoneType` error from occurring[1](https://stackoverflow.com/questions/37556888/why-does-paramiko-sporadically-raise-an-exception).
 
+        stdin.close()
         stdout.close()
         stderr.close()
 
     ssh.close()
+    ssh.get_transport().close()  # Ensure the transport is closed
+
+    #By explicitly closing the `stdin`, `stdout`, and `stderr` files, you can help ensure that resources are properly cleaned up, which should prevent the `NoneType` error from occurring[1](https://stackoverflow.com/questions/37556888/why-does-paramiko-sporadically-raise-an-exception).
 
