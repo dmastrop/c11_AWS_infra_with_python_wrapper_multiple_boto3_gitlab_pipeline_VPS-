@@ -153,3 +153,8 @@ for ip in public_ips:
 
     #By explicitly closing the `stdin`, `stdout`, and `stderr` files, you can help ensure that resources are properly cleaned up, which should prevent the `NoneType` error from occurring[1](https://stackoverflow.com/questions/37556888/why-does-paramiko-sporadically-raise-an-exception).
     # adding more logic to the transport close for this error: AttributeError: 'NoneType' object has no attribute 'close'
+
+print("Script execution completed.")
+
+
+
