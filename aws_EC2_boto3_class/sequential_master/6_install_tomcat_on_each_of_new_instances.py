@@ -56,7 +56,7 @@ for reservation in response['Reservations']:
 # Define SSH details
 port = 22
 username = 'ubuntu'
-key_path = 'EC2_key.pem'
+key_path = 'EC2_generic_key.pem'
 
 # Commands to install Tomcat server
 commands = [

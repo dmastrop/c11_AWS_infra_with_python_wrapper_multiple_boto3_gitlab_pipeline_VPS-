@@ -25,7 +25,7 @@ deploy:
     - echo 'region_name=us-east-1' >> .env
     - echo 'image_id=ami-0e1bed4f06a3b463d' >> .env
     - echo 'instance_type=t2.micro' >> .env
-    - echo 'key_name=course3_kops_from_course8_project14_EC2_key' >> .env
+    - echo 'key_name=generic_keypair_for_python_testing' >> .env
     - echo 'min_count=10' >> .env
     - echo 'max_count=10' >> .env
     - echo 'AWS_PEM_KEY='${AWS_PEM_KEY} >> .env
