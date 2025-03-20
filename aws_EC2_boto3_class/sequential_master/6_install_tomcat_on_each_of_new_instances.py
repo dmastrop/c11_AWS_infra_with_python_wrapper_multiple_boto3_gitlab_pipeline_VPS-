@@ -67,12 +67,21 @@ key_path = 'EC2_generic_key.pem'
 #]
 
 # Commands to install Tomcat server using apt for ubuntu EC2 instances
+#commands = [
+#    'sudo apt update -y',
+#    'sudo apt install -y tomcat9',
+#    'sudo systemctl start tomcat9',
+#    'sudo systemctl enable tomcat9'
+#]
+
+# use DEBIAN_FRONTEND since ssh session is non-interactive.
 commands = [
-    'sudo apt update -y',
-    'sudo apt install -y tomcat9',
+    'sudo DEBIAN_FRONTEND=noninteractive apt update -y',
+    'sudo DEBIAN_FRONTEND=noninteractive apt install -y tomcat9',
     'sudo systemctl start tomcat9',
     'sudo systemctl enable tomcat9'
 ]
+
 
 # SSH into each instance and install Tomcat server
 for ip in public_ips:
