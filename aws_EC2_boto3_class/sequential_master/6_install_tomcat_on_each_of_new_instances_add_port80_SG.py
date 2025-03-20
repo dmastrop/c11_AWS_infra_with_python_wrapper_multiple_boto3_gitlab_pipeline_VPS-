@@ -1,7 +1,8 @@
 import boto3
 from dotenv import load_dotenv
 import os
-import paramiko
+import paramiko # add this to requirement.txt as not part of standard lib
+import time # Import the time module. add this for the ssh retry code below. This is part of standard lib
 
 # test
 # Load environment variables from the .env file
