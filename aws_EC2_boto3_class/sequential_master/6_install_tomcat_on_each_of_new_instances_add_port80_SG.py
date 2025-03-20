@@ -99,8 +99,27 @@ for sg_id in set(security_group_ids):
 for ip in public_ips:
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    ssh.connect(ip, port, username, key_filename=key_path)
+    #ssh.connect(ip, port, username, key_filename=key_path)
     
+    # Retry logic for SSH connection. Instead of the simple ssh.connect above, with one try and no failure logic
+    # add the retry logic below (5 tries with 10 second delay between them).  This is because i am consistently seeing
+    # the first ssh to the first ssh EC2 instance failing.   When manually testing to that same instance, ssh works fine
+    # so it is not access lists, connectivity, pem key, etc. issues.  This should resolve the issue.
+    for attempt in range(5):
+        try:
+            print(f"Attempting to connect to {ip} (Attempt {attempt + 1})")
+            ssh.connect(ip, port, username, key_filename=key_path)
+            break
+        except paramiko.ssh_exception.NoValidConnectionsError as e:
+            print(f"Connection failed: {e}")
+            time.sleep(10)  # Wait before retrying
+    else:
+        print(f"Failed to connect to {ip} after multiple attempts")
+        continue
+    
+
+
+
     for command in commands:
         stdin, stdout, stderr = ssh.exec_command(command)
         print(stdout.read().decode())
