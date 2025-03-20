@@ -28,6 +28,7 @@ deploy:
     - echo 'key_name=course3_kops_from_course8_project14_EC2_key' >> .env
     - echo 'min_count=10' >> .env
     - echo 'max_count=10' >> .env
+    - echo 'AWS_PEM_KEY='${AWS_PEM_KEY} >> .env
 
   script:
     - docker run --rm --env-file .env $CI_REGISTRY_IMAGE:latest
