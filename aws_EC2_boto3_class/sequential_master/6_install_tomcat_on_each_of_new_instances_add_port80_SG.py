@@ -135,7 +135,12 @@ for ip in public_ips:
         stderr.close()
 
     ssh.close()
-    ssh.get_transport().close()  # Ensure the transport is closed
+
+    transport = ssh.get_transport()
+    if transport is not None:
+        transport.close()  # Ensure the transport is closed
+    
+    #ssh.get_transport().close()  # Ensure the transport is closed
 
     #By explicitly closing the `stdin`, `stdout`, and `stderr` files, you can help ensure that resources are properly cleaned up, which should prevent the `NoneType` error from occurring[1](https://stackoverflow.com/questions/37556888/why-does-paramiko-sporadically-raise-an-exception).
-
+    # adding more logic to the transport close for this error: AttributeError: 'NoneType' object has no attribute 'close'
