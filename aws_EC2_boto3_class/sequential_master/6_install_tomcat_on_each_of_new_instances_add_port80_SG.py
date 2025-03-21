@@ -121,20 +121,48 @@ for ip in public_ips:
     print(f"Connected to {ip}. Executing commands...")
 
 
-    for command in commands:
-        stdin, stdout, stderr = ssh.exec_command(command)
-        print(f"Executing command: {command}")
+    #for command in commands:
+        #stdin, stdout, stderr = ssh.exec_command(command)
+        #print(f"Executing command: {command}")
 
 
 
-        stdout_output = stdout.read().decode()
-        stderr_output = stderr.read().decode()
+        #stdout_output = stdout.read().decode()
+        #stderr_output = stderr.read().decode()
 
    
 
-        print(f"STDOUT: {stdout_output}")
-        print(f"STDERR: {stderr_output}")
+        #print(f"STDOUT: {stdout_output}")
+        #print(f"STDERR: {stderr_output}")
         
+
+    #Explicitly close the files and channel(). This is to address an installation issue of tomcat9
+    #from stackoverflow:
+    #By explicitly closing the `stdin`, `stdout`, and `stderr` files, you can help ensure that resources are properly cleaned up, which should prevent the `NoneType` error from occurring[1](https://stackoverflow.com/questions/37556888/why-does-paramiko-sporadically-raise-an-exception).
+
+    #stdin.close()
+    #stdout.close()
+    #stderr.close()
+
+
+# add the retry code into the command block above to look like this
+# This is to attempt to resolve the timing issue with the installation for the first EC2 instance. If this does not resolve
+# the issue that are other things that can be added
+
+    for command in commands:
+        for attempt in range(3):
+            stdin, stdout, stderr = ssh.exec_command(command)
+            stdout_output = stdout.read().decode()
+            stderr_output = stderr.read().decode()
+
+            print(f"Executing command: {command}")
+            print(f"STDOUT: {stdout_output}")
+            print(f"STDERR: {stderr_output}")
+            if "E: Package 'tomcat9' has no installation candidate" not in stderr_output:
+                break
+            print(f"Retrying command: {command} (Attempt {attempt + 1})")
+            time.sleep(10)
+
 
         # Explicitly close the files and channel(). This is to address an installation issue of tomcat9
         # from stackoverflow:
@@ -143,6 +171,8 @@ for ip in public_ips:
         stdin.close()
         stdout.close()
         stderr.close()
+
+
 
     ssh.close()
 
