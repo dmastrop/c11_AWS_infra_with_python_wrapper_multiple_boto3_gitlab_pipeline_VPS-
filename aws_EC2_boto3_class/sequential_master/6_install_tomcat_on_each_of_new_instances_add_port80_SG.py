@@ -127,8 +127,9 @@ for ip in public_ips:
 
 
 
-        print(stdout.read().decode())
-        print(stderr.read().decode())
+        stdout_output = stdout.read().decode()
+        stderr_output = stderr.read().decode()
+
    
 
         print(f"STDOUT: {stdout_output}")
