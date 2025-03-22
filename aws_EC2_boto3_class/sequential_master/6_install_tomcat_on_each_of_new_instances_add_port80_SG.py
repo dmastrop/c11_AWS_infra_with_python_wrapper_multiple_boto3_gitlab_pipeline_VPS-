@@ -195,6 +195,8 @@ for ip, instance_id in zip(public_ips, instance_ids):
 # add a delay for running the commands once the SSH succeeds for first instance(0). For some reason this instance is having# package installation issues with tomcat9
 
     # Add delay for the first instance
+    # this is no longer absolutely required because i now have code to ensure that both instance state is running and status checks are passing. The first instance was failing because SSH went through
+    # running state but status checks were still initializing. Leave this code in just to ensure first instance is ok.
     if ip == public_ips[0]:
         print("Adding delay for the first instance...")
         time.sleep(30)  # Adjust the delay as needed
