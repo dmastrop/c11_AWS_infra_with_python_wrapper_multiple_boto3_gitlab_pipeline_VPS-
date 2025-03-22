@@ -118,14 +118,24 @@ for sg_id in set(security_group_ids):
 # Function to wait for instance to be in running state
 # this function is integrated into the SSH block below so that we can be sure the instances are running prior to 
 # attempting SSH. This alleviates the timing issues with instance(0)?
+
+#def wait_for_instance_running(instance_id, ec2_client):
+#    instance_status = ec2_client.describe_instance_status(InstanceIds=[instance_id])
+#    while instance_status['InstanceStatuses'][0]['InstanceState']['Name'] != 'running':
+#        print(f"Waiting for instance {instance_id} to be in running state...")
+#        time.sleep(10)
+#        instance_status = ec2_client.describe_instance_status(InstanceIds=[instance_id])
+
+
+# Function to wait for instance to be in running state and pass status checks
 def wait_for_instance_running(instance_id, ec2_client):
     instance_status = ec2_client.describe_instance_status(InstanceIds=[instance_id])
-    while instance_status['InstanceStatuses'][0]['InstanceState']['Name'] != 'running':
-        print(f"Waiting for instance {instance_id} to be in running state...")
+    while (instance_status['InstanceStatuses'][0]['InstanceState']['Name'] != 'running' or
+           instance_status['InstanceStatuses'][0]['SystemStatus']['Status'] != 'ok' or
+           instance_status['InstanceStatuses'][0]['InstanceStatus']['Status'] != 'ok'):
+        print(f"Waiting for instance {instance_id} to be in running state and pass status checks...")
         time.sleep(10)
         instance_status = ec2_client.describe_instance_status(InstanceIds=[instance_id])
-
-
 
 
 # SSH into each instance and install Tomcat server
