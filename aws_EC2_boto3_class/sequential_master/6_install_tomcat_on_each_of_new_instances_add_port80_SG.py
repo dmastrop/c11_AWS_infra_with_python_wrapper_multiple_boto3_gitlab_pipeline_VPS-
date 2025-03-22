@@ -145,6 +145,15 @@ for ip in public_ips:
     #stderr.close()
 
 
+# add a delay for running the commands once the SSH succeeds for first instance(0). For some reason this instance is having# package installation issues with tomcat9
+
+    # Add delay for the first instance
+    if ip == public_ips[0]:
+        print("Adding delay for the first instance...")
+        time.sleep(30)  # Adjust the delay as needed
+
+
+
 # add the retry code into the command block above to look like this
 # This is to attempt to resolve the timing issue with the installation for the first EC2 instance. If this does not resolve
 # the issue that are other things that can be added
