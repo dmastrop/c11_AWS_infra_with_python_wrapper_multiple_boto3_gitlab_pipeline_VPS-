@@ -31,5 +31,6 @@ if __name__ == "__main__":
     delays = [20, 5, 90, 360, 90]  # Replace with actual delay values
     # the first number in the array is delay before file 2, is the actual delay before file 3 so this is the wait time for file 2, so use 20, 360, 90 for the delay for first, second, and third files.
 # add 360,90 delays for scripts 5 and 6 for the ssh and tomcat installation
+# REDUCED 360 to 5 to test the new status check and state check code in the SSH block
     run_python_scripts_sequentially(directory, delays)
 
