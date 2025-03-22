@@ -143,8 +143,11 @@ def wait_for_instance_running(instance_id, ec2_client):
 # replace the simple for ip in public_ips with the zip pairing of for ip, instance_id so that we can ensure
 # instances are running prior to SSH by using the wait_for_instance_running function above....
 for ip, instance_id in zip(public_ips, instance_ids):
+
     wait_for_instance_running(instance_id, my_ec2)
     # this wait_for_instance_running does this for all instance_id in my_ec2 boto3 session defined above
+    # this checks for both state and status to be up pror to doing the ssh.connect below
+
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     #ssh.connect(ip, port, username, key_filename=key_path)
