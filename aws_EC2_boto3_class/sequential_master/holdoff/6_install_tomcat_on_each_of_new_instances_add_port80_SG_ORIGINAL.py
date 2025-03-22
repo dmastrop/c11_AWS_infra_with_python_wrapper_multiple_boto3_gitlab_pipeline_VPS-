@@ -36,28 +36,12 @@ my_ec2 = session.client('ec2')
 response = my_ec2.describe_instances(Filters=[{'Name': 'instance-state-name', 'Values': ['running']}])
 
 # Get the public IP addresses and security group IDs of the running instances except the excluded instance ID
-#public_ips = []
-#security_group_ids = []
-#for reservation in response['Reservations']:
-#    for instance in reservation['Instances']:
-#        if instance['InstanceId'] != exclude_instance_id:
-#            public_ips.append(instance['PublicIpAddress'])
-#            for sg in instance['SecurityGroups']:
-#               security_group_ids.append(sg['GroupId'])
-
-
-
-
-# Get the public IP addresses and security group IDs of the running instances except the excluded instance ID
-# add the instance_ids list array so that can check if the instances are ready prior to SSH (see further below)
 public_ips = []
 security_group_ids = []
-instance_ids = []
 for reservation in response['Reservations']:
     for instance in reservation['Instances']:
         if instance['InstanceId'] != exclude_instance_id:
             public_ips.append(instance['PublicIpAddress'])
-            instance_ids.append(instance['InstanceId'])
             for sg in instance['SecurityGroups']:
                 security_group_ids.append(sg['GroupId'])
 
@@ -112,29 +96,8 @@ for sg_id in set(security_group_ids):
         else:
             raise
 
-
-
-
-# Function to wait for instance to be in running state
-# this function is integrated into the SSH block below so that we can be sure the instances are running prior to 
-# attempting SSH. This alleviates the timing issues with instance(0)?
-def wait_for_instance_running(instance_id, ec2_client):
-    instance_status = ec2_client.describe_instance_status(InstanceIds=[instance_id])
-    while instance_status['InstanceStatuses'][0]['InstanceState']['Name'] != 'running':
-        print(f"Waiting for instance {instance_id} to be in running state...")
-        time.sleep(10)
-        instance_status = ec2_client.describe_instance_status(InstanceIds=[instance_id])
-
-
-
-
 # SSH into each instance and install Tomcat server
-#for ip in public_ips:
-# replace the simple for ip in public_ips with the zip pairing of for ip, instance_id so that we can ensure
-# instances are running prior to SSH by using the wait_for_instance_running function above....
-for ip, instance_id in zip(public_ips, instance_ids):
-    wait_for_instance_running(instance_id, my_ec2)
-    # this wait_for_instance_running does this for all instance_id in my_ec2 boto3 session defined above
+for ip in public_ips:
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     #ssh.connect(ip, port, username, key_filename=key_path)
@@ -232,5 +195,6 @@ for ip, instance_id in zip(public_ips, instance_ids):
     # adding more logic to the transport close for this error: AttributeError: 'NoneType' object has no attribute 'close'
 
 print("Script execution completed.")
+
 
 
