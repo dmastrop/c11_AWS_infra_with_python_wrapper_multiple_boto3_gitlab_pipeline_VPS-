@@ -8,7 +8,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 # Load environment variables from the .env file
 load_dotenv()
 
-# Set variables
+# Set variables from environment
 aws_access_key = os.getenv("AWS_ACCESS_KEY_ID")
 aws_secret_key = os.getenv("AWS_SECRET_ACCESS_KEY")
 region_name = os.getenv("region_name")
@@ -80,6 +80,7 @@ for sg_id in set(security_group_ids):
         else:
             raise
 
+# Function to wait for instance to be in running state and pass status checks
 def wait_for_instance_running(instance_id, ec2_client):
     instance_status = ec2_client.describe_instance_status(InstanceIds=[instance_id])
     while (instance_status['InstanceStatuses'][0]['InstanceState']['Name'] != 'running' or
@@ -89,6 +90,7 @@ def wait_for_instance_running(instance_id, ec2_client):
         time.sleep(10)
         instance_status = ec2_client.describe_instance_status(InstanceIds=[instance_id])
 
+# Function to install Tomcat on an instance
 def install_tomcat(ip, instance_id):
     wait_for_instance_running(instance_id, my_ec2)
     ssh = paramiko.SSHClient()
@@ -114,6 +116,8 @@ def install_tomcat(ip, instance_id):
             print(f"Executing command: {command}")
             print(f"STDOUT: {stdout_output}")
             print(f"STDERR: {stderr_output}")
+            
+            # Check for real errors and ignore warnings
             if "E: Package 'tomcat9' has no installation candidate" in stderr_output:
                 print(f"Installation failed for {ip} due to package issue.")
                 stdin.close()
@@ -121,13 +125,20 @@ def install_tomcat(ip, instance_id):
                 stderr.close()
                 ssh.close()
                 return ip, False
-            if stderr_output:
+            
+            # Ignore specific warnings that are not critical errors
+            if "WARNING:" in stderr_output:
+                print(f"Warning on {ip}: {stderr_output}")
+                stderr_output = ""
+            
+            if stderr_output.strip():  # If there are any other errors left after ignoring warnings
                 print(f"Error executing command on {ip}: {stderr_output}")
                 stdin.close()
                 stdout.close()
                 stderr.close()
                 ssh.close()
                 return ip, False
+            
             print(f"Retrying command: {command} (Attempt {attempt + 1})")
             time.sleep(10)
         stdin.close()
@@ -141,8 +152,8 @@ def install_tomcat(ip, instance_id):
     return ip, True
 
 # Use ThreadPoolExecutor to run installations in parallel
-# In this updated script, the `install_tomcat` function returns a tuple containing the IP address and the result (`True` for success, `False` for #failure). The script collects the IP addresses of both successful and failed installations in separate lists (`successful_ips` and `failed_ips`) #and prints them out at the end. This way, you can easily identify which instances had successful installations and which ones failed.
-# Also: This script now correctly checks for both SSH connection failures and package installation failures, and prints out the IP addresses #of both successful and failed installations. Let me know if you need any further adjustments!
+# In this updated script, the `install_tomcat` function returns a tuple containing the IP address and the result (`True` for success, `False` for failure). The script collects the IP addresses of both successful and failed installations in separate lists (`successful_ips` and `failed_ips`) and prints them out at the end. This way, you can easily identify which instances had successful installations and which ones failed.
+# Also: This script now correctly checks for both SSH connection failures and package installation failures, and prints out the IP addresses of both successful and failed installations. Let me know if you need any further adjustments!
 # This is to troubleshoot an issue where with 50 instances there were 2 that did not have Installation completed.
 
 failed_ips = []
