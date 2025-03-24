@@ -80,6 +80,29 @@ for sg_id in set(security_group_ids):
         else:
             raise
 
+
+# Add a security group rule to allow access to port 8080
+for sg_id in set(security_group_ids):
+    try:
+        my_ec2.authorize_security_group_ingress(
+            GroupId=sg_id,
+            IpPermissions=[
+                {
+                    'IpProtocol': 'tcp',
+                    'FromPort': 8080,
+                    'ToPort': 8080,
+                    'IpRanges': [{'CidrIp': '0.0.0.0/0'}]
+                }
+            ]
+        )
+    except my_ec2.exceptions.ClientError as e:
+        if 'InvalidPermission.Duplicate' in str(e):
+            print(f"Rule already exists for security group {sg_id}")
+        else:
+            raise
+
+
+
 # Function to wait for instance to be in running state and pass status checks
 def wait_for_instance_running(instance_id, ec2_client):
     instance_status = ec2_client.describe_instance_status(InstanceIds=[instance_id])
