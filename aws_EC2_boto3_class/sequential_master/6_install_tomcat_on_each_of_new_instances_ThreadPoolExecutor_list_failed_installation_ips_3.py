@@ -153,7 +153,7 @@ def install_tomcat(ip, instance_id):
 
 # Use ThreadPoolExecutor to run installations in parallel
 # In this updated script, the `install_tomcat` function returns a tuple containing the IP address and the result (`True` for success, `False` for failure). The script collects the IP addresses of both successful and failed installations in separate lists (`successful_ips` and `failed_ips`) and prints them out at the end. This way, you can easily identify which instances had successful installations and which ones failed.
-# Also: This script now correctly checks for both SSH connection failures and package installation failures, and prints out the IP addresses of both successful and failed installations. Let me know if you need any further adjustments!
+# Also: This script now correctly checks for both SSH connection failures and package installation failures, and prints out the IP addresses of both successful and failed installations.
 # This is to troubleshoot an issue where with 50 instances there were 2 that did not have Installation completed.
 
 failed_ips = []
