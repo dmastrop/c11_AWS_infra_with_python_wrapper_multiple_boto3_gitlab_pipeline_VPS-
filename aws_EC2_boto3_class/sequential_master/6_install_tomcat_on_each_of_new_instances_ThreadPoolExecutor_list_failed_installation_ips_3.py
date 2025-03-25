@@ -4,6 +4,7 @@ import os
 import paramiko
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import json
 
 # Load environment variables from the .env file
 load_dotenv()
@@ -46,6 +47,19 @@ for reservation in response['Reservations']:
             instance_ids.append(instance['InstanceId'])
             for sg in instance['SecurityGroups']:
                 security_group_ids.append(sg['GroupId'])
+
+
+# Save instance IDs and security group IDs to a file
+# The instance_id and the security_group_ids will be needed in the AWS ALB script in a different .py file
+data = {
+    'instance_ids': instance_ids,
+    'security_group_ids': list(set(security_group_ids))
+}
+with open('instance_ids.json', 'w') as f:
+    json.dump(data, f)
+
+
+
 
 # Define SSH details
 port = 22
