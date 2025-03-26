@@ -183,3 +183,96 @@ logger.info("Describing listener attributes...")
 listener_attributes_description = elb_client.describe_listener_attributes(ListenerArn=listener_arn)
 print_json(listener_attributes_description)
 
+
+
+
+
+# Add the pretty format of the above
+
+def print_formatted_output(data):
+    """Print formatted output for better readability"""
+
+    def format_load_balancers(load_balancers):
+        for lb in load_balancers:
+            print(f"### Load Balancers")
+            print(f"**Load Balancer ARN:** {lb['LoadBalancerArn']}")
+            print(f"**DNS Name:** {lb['DNSName']}")
+            print(f"**Created Time:** {lb['CreatedTime']}")
+            print(f"**Load Balancer Name:** {lb['LoadBalancerName']}")
+            print(f"**Scheme:** {lb['Scheme']}")
+            print(f"**VPC ID:** {lb['VpcId']}")
+            print(f"**State:** {lb['State']['Code']}")
+            print(f"**Type:** {lb['Type']}")
+            print(f"**Availability Zones:**")
+            for az in lb['AvailabilityZones']:
+                print(f"- {az['ZoneName']} ({az['SubnetId']})")
+            print(f"**Security Groups:** {', '.join(lb['SecurityGroups'])}")
+            print(f"**IP Address Type:** {lb['IpAddressType']}")
+            print(f"**Enable Prefix for IPv6 Source NAT:** {lb['EnablePrefixForIpv6SourceNat']}")
+            print()
+
+    def format_load_balancer_attributes(attributes):
+        print(f"### Load Balancer Attributes")
+        for attr in attributes:
+            print(f"**{attr['Key']}:** {attr['Value']}")
+        print()
+
+    def format_target_groups(target_groups):
+        for tg in target_groups:
+            print(f"### Target Groups")
+            print(f"**Target Group ARN:** {tg['TargetGroupArn']}")
+            print(f"**Target Group Name:** {tg['TargetGroupName']}")
+            print(f"**Protocol:** {tg['Protocol']}")
+            print(f"**Port:** {tg['Port']}")
+            print(f"**VPC ID:** {tg['VpcId']}")
+            print(f"**Health Check Protocol:** {tg['HealthCheckProtocol']}")
+            print(f"**Health Check Port:** {tg['HealthCheckPort']}")
+            print(f"**Health Check Enabled:** {tg['HealthCheckEnabled']}")
+            print(f"**Health Check Interval:** {tg['HealthCheckIntervalSeconds']} seconds")
+            print(f"**Health Check Timeout:** {tg['HealthCheckTimeoutSeconds']} seconds")
+            print(f"**Healthy Threshold Count:** {tg['HealthyThresholdCount']}")
+            print(f"**Unhealthy Threshold Count:** {tg['UnhealthyThresholdCount']}")
+            print(f"**Health Check Path:** {tg['HealthCheckPath']}")
+            print(f"**Matcher:** {tg['Matcher']['HttpCode']}")
+            print(f"**Load Balancer ARNs:** {', '.join(tg['LoadBalancerArns'])}")
+            print(f"**Target Type:** {tg['TargetType']}")
+            print(f"**Protocol Version:** {tg.get('ProtocolVersion', 'N/A')}")
+            print(f"**IP Address Type:** {tg['IpAddressType']}")
+            print()
+
+    def format_target_group_attributes(attributes):
+        print(f"### Target Group Attributes")
+        for attr in attributes:
+            print(f"**{attr['Key']}:** {attr['Value']}")
+        print()
+
+    def format_listeners(listeners):
+        for listener in listeners:
+            print(f"### Listeners")
+            print(f"**Listener ARN:** {listener['ListenerArn']}")
+            print(f"**Load Balancer ARN:** {listener['LoadBalancerArn']}")
+            print(f"**Port:** {listener['Port']}")
+            print(f"**Protocol:** {listener['Protocol']}")
+            for action in listener['DefaultActions']:
+                print(f"**Default Actions:** {action['Type']} to target group {action['TargetGroupArn']}")
+            print()
+
+    def format_listener_attributes(attributes):
+        print(f"### Listener Attributes")
+        for attr in attributes:
+            print(f"**{attr['Key']}:** {attr['Value']}")
+        print()
+
+    if 'LoadBalancers' in data:
+        format_load_balancers(data['LoadBalancers'])
+    if 'Attributes' in data:
+        format_load_balancer_attributes(data['Attributes'])
+    if 'TargetGroups' in data:
+        format_target_groups(data['TargetGroups'])
+    if 'TargetGroupAttributes' in data:
+        format_target_group_attributes(data['TargetGroupAttributes'])
+    if 'Listeners' in data:
+        format_listeners(data['Listeners'])
+    if 'ListenerAttributes' in data:
+        format_listener_attributes(data['ListenerAttributes'])
+
