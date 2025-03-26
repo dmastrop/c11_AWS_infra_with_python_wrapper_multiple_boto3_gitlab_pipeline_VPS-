@@ -276,3 +276,39 @@ def print_formatted_output(data):
     if 'ListenerAttributes' in data:
         format_listener_attributes(data['ListenerAttributes'])
 
+
+# call the print_formatted_output function above to actually print out the pretty format.  They are called one at a time
+# using the if blocks above in the print_formatted_output function, if the relevant data is present, i.e.
+# LoadBalancers or Attributes, or TargetGroups, orTargetGroupAttributes, or ListenerAttributes
+
+# Describe load balancers
+logger.info("Describing load balancers...")
+load_balancers_description = elb_client.describe_load_balancers()
+print_formatted_output(load_balancers_description)
+
+# Describe load balancer attributes
+logger.info("Describing load balancer attributes...")
+load_balancer_attributes_description = elb_client.describe_load_balancer_attributes(LoadBalancerArn=load_balancer_arn)
+print_formatted_output(load_balancer_attributes_description)
+
+# Describe target groups
+logger.info("Describing target groups...")
+target_groups_description = elb_client.describe_target_groups()
+print_formatted_output(target_groups_description)
+
+# Describe target group attributes
+logger.info("Describing target group attributes...")
+target_group_attributes_description = elb_client.describe_target_group_attributes(TargetGroupArn=target_group_arn)
+print_formatted_output(target_group_attributes_description)
+
+# Describe listeners
+logger.info("Describing listeners...")
+listeners_description = elb_client.describe_listeners(LoadBalancerArn=load_balancer_arn)
+print_formatted_output(listeners_description)
+
+# Describe listener attributes
+listener_arn = listeners_description['Listeners'][0]['ListenerArn']
+logger.info("Describing listener attributes...")
+listener_attributes_description = elb_client.describe_listener_attributes(ListenerArn=listener_arn)
+print_formatted_output(listener_attributes_description)
+
