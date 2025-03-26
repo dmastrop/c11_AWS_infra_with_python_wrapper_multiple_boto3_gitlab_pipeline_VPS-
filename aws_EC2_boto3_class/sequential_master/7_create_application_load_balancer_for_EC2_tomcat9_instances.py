@@ -102,3 +102,56 @@ logger.info("Listener created successfully.")
 
 print("Application Load Balancer and listener created successfully.")
 
+
+# Enable access logs for the load balancer
+logger.info("Enabling access logs for the load balancer...")
+elb_client.modify_load_balancer_attributes(
+    LoadBalancerArn=load_balancer_arn,
+    Attributes=[
+        {
+            'Key': 'access_logs.s3.enabled',
+            'Value': 'true'
+        },
+        {
+            'Key': 'access_logs.s3.bucket',
+            'Value': 's3-python-alb-logs'
+        },
+        {
+            'Key': 'access_logs.s3.prefix',
+            'Value': 'test'
+        }
+    ]
+)
+logger.info("Access logs enabled successfully.")
+
+# Describe load balancers
+logger.info("Describing load balancers...")
+load_balancers_description = elb_client.describe_load_balancers()
+print(json.dumps(load_balancers_description, indent=4))
+
+# Describe load balancer attributes
+logger.info("Describing load balancer attributes...")
+load_balancer_attributes_description = elb_client.describe_load_balancer_attributes(LoadBalancerArn=load_balancer_arn)
+print(json.dumps(load_balancer_attributes_description, indent=4))
+
+# Describe target groups
+logger.info("Describing target groups...")
+target_groups_description = elb_client.describe_target_groups()
+print(json.dumps(target_groups_description, indent=4))
+
+# Describe target group attributes
+logger.info("Describing target group attributes...")
+target_group_attributes_description = elb_client.describe_target_group_attributes(TargetGroupArn=target_group_arn)
+print(json.dumps(target_group_attributes_description, indent=4))
+
+# Describe listeners
+logger.info("Describing listeners...")
+listeners_description = elb_client.describe_listeners(LoadBalancerArn=load_balancer_arn)
+print(json.dumps(listeners_description, indent=4))
+
+# Describe listener attributes
+listener_arn = listeners_description['Listeners'][0]['ListenerArn']
+logger.info("Describing listener attributes...")
+listener_attributes_description = elb_client.describe_listener_attributes(ListenerArn=listener_arn)
+print(json.dumps(listener_attributes_description, indent=4))
+
