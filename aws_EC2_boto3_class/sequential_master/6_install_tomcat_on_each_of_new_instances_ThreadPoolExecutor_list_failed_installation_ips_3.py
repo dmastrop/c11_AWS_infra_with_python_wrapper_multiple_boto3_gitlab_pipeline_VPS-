@@ -130,7 +130,7 @@ def wait_for_instance_running(instance_id, ec2_client):
         instance_status = ec2_client.describe_instance_status(InstanceIds=[instance_id])
 
 # Function to install Tomcat on an instance
-def install_tomcat(ip, instance_id):
+def install_tomcat(ip, private_ip, instance_id):
     wait_for_instance_running(instance_id, my_ec2)
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -144,7 +144,7 @@ def install_tomcat(ip, instance_id):
             time.sleep(10)
     else:
         print(f"Failed to connect to {ip} after multiple attempts")
-        return ip, False
+        return ip, private_ip, False
 
     print(f"Connected to {ip}. Executing commands...")
     for command in commands:
@@ -163,7 +163,7 @@ def install_tomcat(ip, instance_id):
                 stdout.close()
                 stderr.close()
                 ssh.close()
-                return ip, False
+                return ip, private_ip, False
             
             # Ignore specific warnings that are not critical errors
             if "WARNING:" in stderr_output:
@@ -176,7 +176,7 @@ def install_tomcat(ip, instance_id):
                 stdout.close()
                 stderr.close()
                 ssh.close()
-                return ip, False
+                return ip, private_ip, False
             
             print(f"Retrying command: {command} (Attempt {attempt + 1})")
             time.sleep(10)
@@ -188,7 +188,7 @@ def install_tomcat(ip, instance_id):
     if transport is not None:
         transport.close()
     print(f"Installation completed on {ip}")
-    return ip, True
+    return ip, private_ip, True
 
 # Use ThreadPoolExecutor to run installations in parallel
 # In this updated script, the `install_tomcat` function returns a tuple containing the IP address and the result (`True` for success, `False` for failure). The script collects the IP addresses of both successful and failed installations in separate lists (`successful_ips` and `failed_ips`) and prints them out at the end. This way, you can easily identify which instances had successful installations and which ones failed.
@@ -201,9 +201,9 @@ failed_private_ips = []
 successful_private_ips = []
 
 with ThreadPoolExecutor(max_workers=len(public_ips)) as executor:
-    futures = [executor.submit(install_tomcat, ip, instance_id) for ip, instance_id in zip(public_ips, instance_ids)]
+    futures = [executor.submit(install_tomcat, ip, private_ip, instance_id) for ip, private_ip, instance_id in zip(public_ips, private_ips, instance_ids)]
     for future in as_completed(futures):
-        ip, result = future.result()
+        ip, private_ip, result  = future.result()
         if result:
             successful_ips.append(ip)
             successful_private_ips.append(private_ip)
