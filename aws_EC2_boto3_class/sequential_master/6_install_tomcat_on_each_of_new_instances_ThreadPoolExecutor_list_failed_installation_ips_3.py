@@ -38,12 +38,14 @@ response = my_ec2.describe_instances(Filters=[{'Name': 'instance-state-name', 'V
 
 # Get the public IP addresses and security group IDs of the running instances except the excluded instance ID
 public_ips = []
+private_ips = []
 security_group_ids = []
 instance_ids = []
 for reservation in response['Reservations']:
     for instance in reservation['Instances']:
         if instance['InstanceId'] != exclude_instance_id:
             public_ips.append(instance['PublicIpAddress'])
+            private_ips.append(instance['PrivateIpAddress'])
             instance_ids.append(instance['InstanceId'])
             for sg in instance['SecurityGroups']:
                 security_group_ids.append(sg['GroupId'])
@@ -195,19 +197,26 @@ def install_tomcat(ip, instance_id):
 
 failed_ips = []
 successful_ips = []
+failed_private_ips = []
+successful_private_ips = []
+
 with ThreadPoolExecutor(max_workers=len(public_ips)) as executor:
     futures = [executor.submit(install_tomcat, ip, instance_id) for ip, instance_id in zip(public_ips, instance_ids)]
     for future in as_completed(futures):
         ip, result = future.result()
         if result:
             successful_ips.append(ip)
+            successful_private_ips.append(private_ip)
         else:
             failed_ips.append(ip)
+            failed_private_ips.append(private_ip)
 
 if successful_ips:
     print(f"Installation succeeded on the following IPs: {', '.join(successful_ips)}")
+    print(f"Installation succeeded on the following private IPs: {', '.join(successful_private_ips)}")
 if failed_ips:
     print(f"Installation failed on the following IPs: {', '.join(failed_ips)}")
+    print(f"Installation failed on the following private IPs: {', '.join(failed_private_ips)}")
 
 print("Script execution completed.")
 
