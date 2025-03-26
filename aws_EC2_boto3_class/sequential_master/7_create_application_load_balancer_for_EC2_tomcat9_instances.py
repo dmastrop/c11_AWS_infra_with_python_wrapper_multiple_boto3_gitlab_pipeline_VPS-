@@ -124,34 +124,45 @@ elb_client.modify_load_balancer_attributes(
 )
 logger.info("Access logs enabled successfully.")
 
+
+# error due to the presence of `datetime` objects in the response from AWS, which are not directly serializable to JSON. To# fix this, use a custom serializer for `datetime` objects with the function below and call this function when doing the
+# printing of the describe data sets below
+def json_serial(obj):
+    """JSON serializer for objects not serializable by default json code"""
+    if isinstance(obj, datetime):
+        return obj.isoformat()
+    raise TypeError ("Type not serializable")
+
+
+
 # Describe load balancers
 logger.info("Describing load balancers...")
 load_balancers_description = elb_client.describe_load_balancers()
-print(json.dumps(load_balancers_description, indent=4))
+print(json.dumps(load_balancers_description, indent=4, default=json_serial))
 
 # Describe load balancer attributes
 logger.info("Describing load balancer attributes...")
 load_balancer_attributes_description = elb_client.describe_load_balancer_attributes(LoadBalancerArn=load_balancer_arn)
-print(json.dumps(load_balancer_attributes_description, indent=4))
+print(json.dumps(load_balancer_attributes_description, indent=4, default=json_serial))
 
 # Describe target groups
 logger.info("Describing target groups...")
 target_groups_description = elb_client.describe_target_groups()
-print(json.dumps(target_groups_description, indent=4))
+print(json.dumps(target_groups_description, indent=4, default=json_serial))
 
 # Describe target group attributes
 logger.info("Describing target group attributes...")
 target_group_attributes_description = elb_client.describe_target_group_attributes(TargetGroupArn=target_group_arn)
-print(json.dumps(target_group_attributes_description, indent=4))
+print(json.dumps(target_group_attributes_description, indent=4, default=json_serial))
 
 # Describe listeners
 logger.info("Describing listeners...")
 listeners_description = elb_client.describe_listeners(LoadBalancerArn=load_balancer_arn)
-print(json.dumps(listeners_description, indent=4))
+print(json.dumps(listeners_description, indent=4, default=json_serial))
 
 # Describe listener attributes
 listener_arn = listeners_description['Listeners'][0]['ListenerArn']
 logger.info("Describing listener attributes...")
 listener_attributes_description = elb_client.describe_listener_attributes(ListenerArn=listener_arn)
-print(json.dumps(listener_attributes_description, indent=4))
+print(json.dumps(listener_attributes_description, indent=4, default=json_serial))
 
