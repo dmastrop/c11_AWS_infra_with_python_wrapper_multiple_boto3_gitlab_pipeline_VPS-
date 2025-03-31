@@ -48,6 +48,10 @@ if not tomcat_target_group_arn:
     logger.error("Tomcat target group ARN not found.")
     raise ValueError("Tomcat target group ARN not found.")
 
+print(f"Tomcat Target Group ARN: {tomcat_target_group_arn}")
+
+
+
 
 # Load instance and security group IDs from JSON file
 with open('instance_ids.json', 'r') as f:
