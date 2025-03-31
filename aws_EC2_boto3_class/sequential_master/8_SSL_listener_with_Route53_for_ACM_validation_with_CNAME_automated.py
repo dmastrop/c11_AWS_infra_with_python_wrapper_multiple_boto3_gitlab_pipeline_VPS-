@@ -143,4 +143,4 @@ response = elb_client.create_listener(
 print("SSL listener created:", response)
 
 # Need to automate the adding of the CNAME to route53 and then wait for ACM cert to be Issued state and only then create the HTTPS listener. Otherwise the cert is not valid and the listener will fail. Use the route53 class to add the CNAME info form the ACM class, and once the CNAME is added to route53 wait for the cert to be Issued state and only then create the 443 listener.   Note: will also have to add code to the default security group that the loadbalancer uses for port 443. 
-# NOTE: the Route53 hosted zone loadbalancer.holinessinloveofchrist.com has to have an A record mapped to the DNS AWS URI. This can be automated as well. The CNAME addition to route53 is already automated.  
+# NOTE: the Route53 hosted zone  has to have an A record mapped to the DNS AWS URI. This can be automated as well. The CNAME addition to route53 is already automated.  
