@@ -107,4 +107,4 @@ response = elb_client.create_listener(
 
 print("SSL listener created:", response)
 
-# This script will request a new ACM certificate for the domain `loadbalancer.holinessinloveofchrist.com`, wait for the certificate to be issued, and print the CNAME records required for DNS validation. You can then manually add these CNAME records to your Route 53 hosted zone.
+# This script will request a new ACM certificate for the domain `loadbalancer.holinessinloveofchrist.com`, wait for the certificate to be issued, and print the CNAME records required for DNS validation. You can then manually add these CNAME records to your Route 53 hosted zone. When the loadbalancer is ready make sure to add the AWS DNS as an A record for loadbalancer.holinessinloveofchrist.com
