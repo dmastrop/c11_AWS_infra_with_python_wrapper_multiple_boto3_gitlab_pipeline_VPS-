@@ -36,6 +36,14 @@ route53_client = session.client('route53')
 autoscaling_client = session.client('autoscaling')
 
 
+# Retrieve the load balancer ARN and DNS name
+load_balancers = elb_client.describe_load_balancers()
+load_balancer_arn = load_balancers['LoadBalancers'][0]['LoadBalancerArn']
+load_balancer_dns_name = load_balancers['LoadBalancers'][0]['DNSName']
+
+print(f"Load Balancer DNS Name: {load_balancer_dns_name}")
+print(f"Load Balancer ARN: {load_balancer_arn}")
+
 # Retrieve the target group ARN for Tomcat instances
 target_groups = elb_client.describe_target_groups(LoadBalancerArn=load_balancer_arn)
 tomcat_target_group_arn = None
@@ -59,12 +67,6 @@ with open('instance_ids.json', 'r') as f:
     instance_ids = data['instance_ids']
     security_group_ids = data['security_group_ids']
 
-# Retrieve the load balancer ARN and DNS name
-load_balancers = elb_client.describe_load_balancers()
-load_balancer_arn = load_balancers['LoadBalancers'][0]['LoadBalancerArn']
-load_balancer_dns_name = load_balancers['LoadBalancers'][0]['DNSName']
-
-print(f"Load Balancer DNS Name: {load_balancer_dns_name}")
 
 
 
