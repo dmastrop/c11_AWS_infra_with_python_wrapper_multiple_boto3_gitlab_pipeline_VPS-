@@ -47,6 +47,40 @@ load_balancer_dns_name = load_balancers['LoadBalancers'][0]['DNSName']
 
 print(f"Load Balancer DNS Name: {load_balancer_dns_name}")
 
+
+
+# Add A record for the ALB DNS name to Route53 hosted zone as a routed A record
+hosted_zone_id = 'Z03230492XBYD29ITMJTQ'  # Replace with your Route 53 hosted zone ID
+route53_client.change_resource_record_sets(
+    HostedZoneId=hosted_zone_id,
+    ChangeBatch={
+        'Changes': [
+            {
+                'Action': 'UPSERT',
+                'ResourceRecordSet': {
+                    'Name': 'loadbalancer.holinessinloveofchrist.com',
+                    'Type': 'A',
+                    'AliasTarget': {
+                        'HostedZoneId': 'Z35SXDOTRQ7X7K',  # Hosted zone ID for the load balancer. This is not
+                        # the same as the hosted_zone_id for Route53. .  The hosted zone ID for the loadbalancer  is a
+                        # static value based upon the zone us-east-1 in this case
+                        # see this link:   https://docs.aws.amazon.com/general/latest/gr/elb.html
+                        'DNSName': load_balancer_dns_name,
+                        'EvaluateTargetHealth': False
+                    }
+                }
+            }
+        ]
+    }
+)
+
+print("A record added to Route 53")
+
+
+
+
+
+
 # Request a new certificate using the custom DNS domain name
 response = acm_client.request_certificate(
     DomainName='loadbalancer.holinessinloveofchrist.com',
