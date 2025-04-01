@@ -71,6 +71,7 @@ with open('instance_ids.json', 'r') as f:
 # Subnet IDs for the default VPC
 subnet_ids = ['subnet-0e34b914c08ba8bd5', 'subnet-09638c6f9b996a855', 'subnet-092198dd41287da22', 'subnet-0183921fc71694caa', 'subnet-06840adffc6b5353e', 'subnet-005a6e9eec2a0087b']
 
+availability_zones = ['us-east-1a', 'us-east-1b', 'us-east-1c', 'us-east-1d', 'us-east-1e', 'us-east-1f']  # Replace with your actual Availability Zones
 
 
 # Create Auto Scaling Group
@@ -81,6 +82,7 @@ autoscaling_client.create_auto_scaling_group(
     MaxSize=100,
     DesiredCapacity=35,
     VPCZoneIdentifier=','.join(subnet_ids),  # Use the subnet IDs here
+    AvailabilityZones=availability_zones,  # Specify the Availability Zones
     TargetGroupARNs=[tomcat_target_group_arn],
     Tags=[
         {
