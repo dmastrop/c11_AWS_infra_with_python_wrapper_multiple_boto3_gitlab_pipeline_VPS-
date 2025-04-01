@@ -96,30 +96,19 @@ print("Auto Scaling Group created")
 
 
 
-# Create scaling policies
+# Create a single scaling policy
 autoscaling_client.put_scaling_policy(
     AutoScalingGroupName='my-auto-scaling-group',
-    PolicyName='scale-out-policy',
+    PolicyName='target-tracking-scaling-policy',
     PolicyType='TargetTrackingScaling',
     TargetTrackingConfiguration={
         'PredefinedMetricSpecification': {
             'PredefinedMetricType': 'ASGAverageCPUUtilization'
         },
-        'TargetValue': 50.0
+        'TargetValue': 50.0,
+        'DisableScaleIn': False  # Allow scaling in
     }
 )
 
-autoscaling_client.put_scaling_policy(
-    AutoScalingGroupName='my-auto-scaling-group',
-    PolicyName='scale-in-policy',
-    PolicyType='TargetTrackingScaling',
-    TargetTrackingConfiguration={
-        'PredefinedMetricSpecification': {
-            'PredefinedMetricType': 'ASGAverageCPUUtilization'
-        },
-        'TargetValue': 20.0
-    }
-)
-
-print("Scaling policies created")
+print("Scaling policy created")
 
