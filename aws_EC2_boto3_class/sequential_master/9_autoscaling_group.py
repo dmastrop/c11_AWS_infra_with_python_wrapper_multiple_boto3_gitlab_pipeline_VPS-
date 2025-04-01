@@ -68,16 +68,19 @@ with open('instance_ids.json', 'r') as f:
     security_group_ids = data['security_group_ids']
 
 
+# Subnet IDs for the default VPC
+subnet_ids = ['subnet-0e34b914c08ba8bd5', 'subnet-09638c6f9b996a855', 'subnet-092198dd41287da22', 'subnet-0183921fc71694caa', 'subnet-06840adffc6b5353e', 'subnet-005a6e9eec2a0087b']
+
 
 
 # Create Auto Scaling Group
 autoscaling_client.create_auto_scaling_group(
     AutoScalingGroupName='my-auto-scaling-group',
     InstanceId=instance_ids[0],  # Use the first instance ID from your list
-    MinSize=1,
-    MaxSize=10,
-    DesiredCapacity=2,
-    VPCZoneIdentifier=','.join(security_group_ids),
+    MinSize=30,
+    MaxSize=100,
+    DesiredCapacity=35,
+    VPCZoneIdentifier=','.join(subnet_ids),  # Use the subnet IDs here
     TargetGroupARNs=[tomcat_target_group_arn],
     Tags=[
         {
@@ -88,6 +91,8 @@ autoscaling_client.create_auto_scaling_group(
 )
 
 print("Auto Scaling Group created")
+
+
 
 # Create scaling policies
 autoscaling_client.put_scaling_policy(
