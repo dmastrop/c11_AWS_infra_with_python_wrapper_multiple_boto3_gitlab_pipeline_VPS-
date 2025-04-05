@@ -9,6 +9,8 @@ def run_python_scripts_sequentially(directory, delays):
     # Filter out only Python scripts
     python_scripts = [f for f in files if f.endswith('.py')]
     
+    all_outputs = []  # Collect outputs of all scripts
+    
     # Run each Python script in the order they appear in the directory
     for i, script in enumerate(python_scripts):
         script_path = os.path.join(directory, script)
@@ -22,13 +24,15 @@ def run_python_scripts_sequentially(directory, delays):
         # Clean up the output by replacing '\\n' with actual new lines
         cleaned_output = stdout.replace('\\n', '\n')
         
-        # Print the cleaned output immediately
-        print(cleaned_output)
+        # Collect the cleaned output
+        all_outputs.append(cleaned_output)
         
         # Introduce a delay if it's not the last script
         if i < len(python_scripts) - 1:
             print(f"Delaying next execution by {delays[i]} seconds...")
             time.sleep(delays[i])
+    
+    return all_outputs
 
 if __name__ == "__main__":
     # Specify the directory containing the Python scripts
@@ -37,5 +41,7 @@ if __name__ == "__main__":
     # Specify the delays between running each script
     delays = [5, 1, 90, 10, 90]  # Replace with actual delay values
     
-    run_python_scripts_sequentially(directory, delays)
+    outputs = run_python_scripts_sequentially(directory, delays)
+    for output in outputs:
+        print(output)
 

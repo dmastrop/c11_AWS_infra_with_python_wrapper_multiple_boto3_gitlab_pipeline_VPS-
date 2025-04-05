@@ -14,7 +14,7 @@ def run_python_scripts_sequentially(directory, delays):
         script_path = os.path.join(directory, script)
         print(f"Running {script_path}...")
         
-        Original result:
+        #Original result:
         result = subprocess.run(['python3', script_path], capture_output=True, text=True)
         
         # try result in binary and manually decode in utf-8 as follows:
