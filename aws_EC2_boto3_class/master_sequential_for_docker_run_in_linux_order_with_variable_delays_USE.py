@@ -13,9 +13,15 @@ def run_python_scripts_sequentially(directory, delays):
     for i, script in enumerate(python_scripts):
         script_path = os.path.join(directory, script)
         print(f"Running {script_path}...")
-        result = subprocess.run(['python3', script_path], capture_output=True, text=True)
-        # try ignoring the intermittent utf-8 decode error
+        
+        #Original result:
+        #result = subprocess.run(['python3', script_path], capture_output=True, text=True)
+        
+        # try result in binary and manually decode in utf-8 as follows:
+        result = subprocess.run(['python3', script_path], capture_output=True)
         stdout = result.stdout.decode('utf-8', errors='ignore')
+        stderr = result.stderr.decode('utf-8', errors='ignore')
+
         print(result.stdout)
         print(result.stderr)
         
