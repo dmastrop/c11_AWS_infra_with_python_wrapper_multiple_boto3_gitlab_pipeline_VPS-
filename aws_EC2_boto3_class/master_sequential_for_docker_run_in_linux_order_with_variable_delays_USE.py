@@ -13,7 +13,7 @@ def run_python_scripts_sequentially(directory, delays):
     for i, script in enumerate(python_scripts):
         script_path = os.path.join(directory, script)
         print(f"Running {script_path}...")
-        result = subprocess.run(['python3', script_path], capture_output=True, text=True)
+        result = subprocess.run(['python3', script_path], capture_output=True, text=True, timeout=300)
         print(result.stdout)
         print(result.stderr)
         
