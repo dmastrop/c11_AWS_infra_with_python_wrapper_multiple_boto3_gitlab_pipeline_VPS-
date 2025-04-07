@@ -141,3 +141,6 @@ install_wget_and_run_script(instance_dns if instance_dns else instance_ip, key_f
 
 print(f"EC2 instance {instance_id} is created and stress traffic script is running.")
 
+
+
+# test2
