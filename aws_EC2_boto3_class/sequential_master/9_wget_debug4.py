@@ -97,7 +97,10 @@ def install_wget_and_run_script(instance_address, key_path):
     commands = [
         "sudo DEBIAN_FRONTEND=noninteractive apt update",    
         #"sudo apt update",
-        "sudo DEBIAN_FRONTEND=noninteractive apt install wget -y",
+        
+
+        "sudo DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install wget -y",
+        #"sudo DEBIAN_FRONTEND=noninteractive apt install wget -y",
         #"sudo apt install wget -y",
         "echo 'while true; do wget -q -O- https://loadbalancer.holinessinloveofchrist.com; done' > stress_test.sh",
         "chmod +x stress_test.sh",
