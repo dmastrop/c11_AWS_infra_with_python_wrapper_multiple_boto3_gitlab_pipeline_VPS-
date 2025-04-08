@@ -4,6 +4,7 @@ import os
 from dotenv import load_dotenv
 import logging
 import time
+import sys
 
 # Initialize logger
 logger = logging.getLogger()
