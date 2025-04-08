@@ -37,8 +37,10 @@ try:
     )
     instance_id = instances['Instances'][0]['InstanceId']
     print(f"Launched EC2 instance with ID: {instance_id}")
+    sys.stdout.flush()
 except Exception as e:
     print(f"Error launching EC2 instance: {e}")
+    sys.stdout.flush()
     exit(1)
 
 # Function to wait for instance to be in running state and pass status checks
@@ -47,16 +49,20 @@ def wait_for_instance_running(instance_id, ec2_client):
         try:
             instance_status = ec2_client.describe_instance_status(InstanceIds=[instance_id])
             print(f"Instance status: {instance_status}")
+            sys.stdout.flush()
             if (instance_status['InstanceStatuses'][0]['InstanceState']['Name'] == 'running' and
                 instance_status['InstanceStatuses'][0]['SystemStatus']['Status'] == 'ok' and
                 instance_status['InstanceStatuses'][0]['InstanceStatus']['Status'] == 'ok'):
                 print(f"Instance {instance_id} is now running and has passed status checks.")
+                sys.stdout.flush()
                 break
             else:
                 print(f"Waiting for instance {instance_id} to be in running state and pass status checks...")
+                sys.stdout.flush()
                 time.sleep(10)
         except Exception as e:
             print(f"Error checking instance status: {e}")
+            sys.stdout.flush()
             time.sleep(10)
 
 # Wait for the instance to be in running state and pass status checks
@@ -69,10 +75,13 @@ try:
     instance_ip = instance_description['Reservations'][0]['Instances'][0].get('PublicIpAddress', '')
     if not instance_dns:
         print(f"Public DNS name not available, using Public IP: {instance_ip}")
+        sys.stdout.flush()
     else:
         print(f"Instance DNS: {instance_dns}")
+        sys.stdout.flush()
 except Exception as e:
     print(f"Error retrieving instance details: {e}")
+    sys.stdout.flush()
     exit(1)
 
 # Function to install wget and run the stress test script on the instance
@@ -83,17 +92,21 @@ def install_wget_and_run_script(instance_address, key_path):
     for attempt in range(5):
         try:
             print(f"Attempting to connect to {instance_address} (Attempt {attempt + 1})")
+            sys.stdout.flush()
             ssh.connect(instance_address, port=22, username='ubuntu', key_filename=key_path)
             break
         except paramiko.ssh_exception.NoValidConnectionsError as e:
             print(f"Connection failed: {e}")
+            sys.stdout.flush()
             time.sleep(10)
     else:
         print(f"Failed to connect to {instance_address} after multiple attempts")
+        sys.stdout.flush()
         return False
 
     print(f"Connected to {instance_address}. Executing commands...")
-    
+    sys.stdout.flush()
+
     commands = [
         "sudo DEBIAN_FRONTEND=noninteractive apt update",    
         #"sudo apt update",
@@ -109,6 +122,7 @@ def install_wget_and_run_script(instance_address, key_path):
     
     for command in commands:
         print(f"Executing command: {command}")
+        sys.stdout.flush()
         stdin, stdout, stderr = ssh.exec_command(command)
         stdout_output = stdout.read().decode()
         stderr_output = stderr.read().decode()
@@ -117,15 +131,19 @@ def install_wget_and_run_script(instance_address, key_path):
         # This issue caused the script to abort without running the shell script
         if "wget is already the newest version" in stdout_output or "wget is already installed" in stdout_output:
             print("wget is already installed. Proceeding with the stress test script.")
+            sys.stdout.flush()
             continue
 
 
 
         print(f"STDOUT: {stdout_output}")
+        sys.stdout.flush()
         print(f"STDERR: {stderr_output}")
-       
+        sys.stdout.flush()
+        
         if stderr_output.strip() and "WARNING: apt does not have a stable CLI interface." not in stderr_output:
             print(f"Error executing command on {instance_address}: {stderr_output}")
+            sys.stdout.flush()
 
         #if stderr_output.strip():
             #print(f"Error executing command on {instance_address}: {stderr_output}")
@@ -147,7 +165,9 @@ def install_wget_and_run_script(instance_address, key_path):
         transport.close()
     
     print(f"Installation completed on {instance_address}")
+    sys.stdout.flush()
     print(f"Instance ID {instance_id} is sending wget traffic.")
+    sys.stdout.flush()
     return True
 
 # Path to your SSH key file (replace with your actual key file path)
@@ -157,7 +177,7 @@ key_file_path = 'EC2_generic_key.pem'
 install_wget_and_run_script(instance_dns if instance_dns else instance_ip, key_file_path)
 
 print(f"EC2 instance {instance_id} is created and stress traffic script is running.")
-
+sys.stdout.flush()
 
 
 # test2

@@ -46,7 +46,7 @@ load_balancer_arn = load_balancers['LoadBalancers'][0]['LoadBalancerArn']
 load_balancer_dns_name = load_balancers['LoadBalancers'][0]['DNSName']
 
 print(f"Load Balancer DNS Name: {load_balancer_dns_name}")
-
+sys.stdout.flush()
 
 
 # Add A record for the ALB DNS name to Route53 hosted zone as a routed A record
@@ -75,7 +75,7 @@ route53_client.change_resource_record_sets(
 )
 
 print("A record added to Route 53")
-
+sys.stdout.flush()
 
 
 
@@ -89,6 +89,7 @@ response = acm_client.request_certificate(
 
 certificate_arn = response['CertificateArn']
 print("Certificate ARN:", certificate_arn)
+sys.stdout.flush()
 
 # Wait for the certificate to be issued and retrieve the CNAME records for DNS validation
 print("Waiting for certificate to be issued...")
@@ -103,6 +104,7 @@ for option in domain_validation_options:
     if 'ResourceRecord' in option:
         cname_record = option['ResourceRecord']
         print(f"CNAME record: {cname_record['Name']} -> {cname_record['Value']}")
+        sys.stdout.flush()
 
 # Add CNAME records to Route 53
 #hosted_zone_id = 'YOUR_ROUTE53_HOSTED_ZONE_ID'  # Replace with Route 53 hosted zone ID
@@ -127,6 +129,7 @@ route53_client.change_resource_record_sets(
 )
 
 print("CNAME records added to Route 53")
+sys.stdout.flush()
 
 # Wait for the certificate to be issued
 while True:
@@ -135,9 +138,11 @@ while True:
     if status == 'ISSUED':
         break
     print("Waiting for certificate to be issued...")
+    sys.stdout.flush()
     time.sleep(30)
 
 print("Certificate issued")
+sys.stdout.flush()
 
 # Retrieve the listener ARN
 listeners = elb_client.describe_listeners(LoadBalancerArn=load_balancer_arn)
@@ -175,6 +180,7 @@ response = elb_client.create_listener(
 )
 
 print("SSL listener created:", response)
+sys.stdout.flush()
 
 # Need to automate the adding of the CNAME to route53 and then wait for ACM cert to be Issued state and only then create the HTTPS listener. Otherwise the cert is not valid and the listener will fail. Use the route53 class to add the CNAME info form the ACM class, and once the CNAME is added to route53 wait for the cert to be Issued state and only then create the 443 listener.   Note: will also have to add code to the default security group that the loadbalancer uses for port 443. 
 # NOTE: the Route53 hosted zone  has to have an A record mapped to the DNS AWS URI. This can be automated as well. The CNAME addition to route53 is already automated.  
