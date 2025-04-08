@@ -115,9 +115,14 @@ def install_wget_and_run_script(instance_address, key_path):
         "sudo DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install wget -y",
         #"sudo DEBIAN_FRONTEND=noninteractive apt install wget -y",
         #"sudo apt install wget -y",
+        
         "echo 'while true; do wget -q -O- https://loadbalancer.holinessinloveofchrist.com; done' > stress_test.sh",
+        
         "chmod +x stress_test.sh",
-        "./stress_test.sh"
+        
+        # Move this out of the command block so that the wget shell script output does NOT print to gitlab console.
+        # Otherwise, the buffer overflows and the print statements for many of the scripts stop going to the console.
+        # "./stress_test.sh"
     ]
     
     for command in commands:
@@ -144,7 +149,6 @@ def install_wget_and_run_script(instance_address, key_path):
         if stderr_output.strip() and "WARNING: apt does not have a stable CLI interface." not in stderr_output:
             print(f"Error executing command on {instance_address}: {stderr_output}")
             sys.stdout.flush()
-
         #if stderr_output.strip():
             #print(f"Error executing command on {instance_address}: {stderr_output}")
             stdin.close()
@@ -155,11 +159,18 @@ def install_wget_and_run_script(instance_address, key_path):
         
         time.sleep(10)
     
+
+    # Execute the stress test script without printing its output
+    # This was moved out of the command block above to prevent it printing to the console with the other stuff.
+    ssh.exec_command("./stress_test.sh")
+
+
+
     stdin.close()
     stdout.close()
     stderr.close()
-    ssh.close()
-    
+    #ssh.close()
+
     transport = ssh.get_transport()
     if transport is not None:
         transport.close()
