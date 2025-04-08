@@ -112,6 +112,15 @@ def install_wget_and_run_script(instance_address, key_path):
         stdin, stdout, stderr = ssh.exec_command(command)
         stdout_output = stdout.read().decode()
         stderr_output = stderr.read().decode()
+        
+        # Check if wget is already installed and proceed if it is
+        # This issue caused the script to abort without running the shell script
+        if "wget is already the newest version" in stdout_output or "wget is already installed" in stdout_output:
+            print("wget is already installed. Proceeding with the stress test script.")
+            continue
+
+
+
         print(f"STDOUT: {stdout_output}")
         print(f"STDERR: {stderr_output}")
         
