@@ -81,7 +81,25 @@ commands = [
 
 
 
-
+# Add a security group rule to allow access to port 22
+for sg_id in set(security_group_ids):
+    try:
+        my_ec2.authorize_security_group_ingress(
+            GroupId=sg_id,
+            IpPermissions=[
+                {
+                    'IpProtocol': 'tcp',
+                    'FromPort': 22,
+                    'ToPort': 22,
+                    'IpRanges': [{'CidrIp': '0.0.0.0/0'}]
+                }
+            ]
+        )
+    except my_ec2.exceptions.ClientError as e:
+        if 'InvalidPermission.Duplicate' in str(e):
+            print(f"Rule already exists for security group {sg_id}")
+        else:
+            raise
 
 # Add a security group rule to allow access to port 80
 for sg_id in set(security_group_ids):
